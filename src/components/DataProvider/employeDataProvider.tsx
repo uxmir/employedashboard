@@ -1,4 +1,4 @@
-import React, { createContext,ReactNode,useContext, useState } from 'react'
+import React, { createContext,ReactNode,useContext, useEffect, useState } from 'react'
 interface EmployeData{
     employe_name:string,
     department:string,
@@ -7,14 +7,26 @@ interface EmployeData{
     progress:number
 }
 interface EmployeContextType{
-    employes:EmployeData[]
+    employes:EmployeData[],
+    createEmployeData:(formData:EmployeData)=>void
 }
 export const EmployeDataContext=createContext<EmployeContextType|undefined>(undefined)
 const EmployeDataProvider:React.FC<{children:ReactNode}> = ({children}) => {
     const [employes,setEmployes]=useState<EmployeData[]>([])
-    
+  const createEmployeData=(formData:EmployeData)=>{
+    const updatedData=[...employes,{...formData,key: Date.now()}]
+    setEmployes(updatedData)
+    localStorage.setItem("data",JSON.stringify(updatedData))
+  }
+  useEffect(()=>{
+    const savedData=localStorage.getItem("data")
+    if(!savedData){
+      return;
+    }
+    setEmployes(JSON.parse(savedData))
+  },[])
   return (
-    <EmployeDataContext.Provider value={{employes}}>
+    <EmployeDataContext.Provider value={{employes,createEmployeData}}>
       {children}
     </EmployeDataContext.Provider>
   )
@@ -22,4 +34,10 @@ const EmployeDataProvider:React.FC<{children:ReactNode}> = ({children}) => {
 
 export default EmployeDataProvider
 
-export const useEmploye=()=>useContext(EmployeDataContext)
+export const useEmploye=()=>{
+  const context=useContext(EmployeDataContext)
+  if(!context){
+    throw new Error("employe context is not here")
+  }
+  return context
+}
