@@ -3,18 +3,22 @@ import Container from "../Container";
 import { Table, Tag, Button, Space, Drawer, Progress } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import CreateEmploye from "../CreateEmployeForm/CreateEmploye";
+import EditEmploye from "../EditEmployeForm/EditEmploye";
 import { useEmploye } from "../DataProvider/EmployeDataProvider";
 
 const Employe: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [createEmployeDrawer, setCreateEmployeDrawer] =
     useState<boolean>(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
   const { employes } = useEmploye();
   const columns = [
     {
       title: "Employe Name",
       dataIndex: "employe_name",
       key: "employe_name",
+      // স্ট্রিং এর জন্য localeCompare ব্যবহার করুন
+      sorter: (a: any, b: any) => a.employe_name.localeCompare(b.employe_name),
       render: (employe_name: string) => (
         <b className="text-gray-600 capitalize font-medium text-base">
           {employe_name}
@@ -25,6 +29,7 @@ const Employe: React.FC = () => {
       title: "Department",
       dataIndex: "department",
       key: "department",
+      sorter: (a: any, b: any) => a.department.localeCompare(b.department),
       render: (department: string) => (
         <span className="text-gray-600 capitalize font-medium text-base">
           {department}
@@ -35,6 +40,7 @@ const Employe: React.FC = () => {
       title: "Role",
       dataIndex: "role",
       key: "role",
+      sorter: (a: any, b: any) => a.role.localeCompare(b.role),
       render: (role: string) => (
         <span className="text-gray-600 capitalize font-medium text-base">
           {role}
@@ -45,29 +51,37 @@ const Employe: React.FC = () => {
       title: "Joining Date",
       dataIndex: "joining_date",
       key: "joining_date",
+      sorter: (a: any, b: any) => {
+        const dateA = a.joining_date.split("/").reverse().join("");
+        const dateB = b.joining_date.split("/").reverse().join("");
+        return dateA.localeCompare(dateB);
+      },
       render: (joining_date: string) => (
         <span className="text-gray-600 capitalize font-medium text-base">
           {joining_date}
         </span>
       ),
     },
-
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      sorter: (a: any, b: any) => a.status.localeCompare(b.status),
       render: (status: string) => (
-        <Tag color={`${status === "active" ? "green" : "red"}`}>{status}</Tag>
+        <Tag color={status === "active" ? "green" : "red"}>{status}</Tag>
       ),
     },
     {
       title: "Progress",
       dataIndex: "progress",
       key: "progress",
+      sorter: (a: any, b: any) => a.progress - b.progress,
       render: (progress: number) => (
         <Progress
           percent={progress}
-          status={`${progress > 70 ? "success" : "exception"}`}
+          status={progress > 70 ? "success" : "exception"}
+          showInfo={true}
+          format={(percent) => `${percent}%`}
         />
       ),
     },
@@ -75,15 +89,23 @@ const Employe: React.FC = () => {
       title: "Actions",
       dataIndex: "action",
       key: "action",
-      render: () => (
+      render: (_: any, record: any) => (
         <Space size={"middle"}>
-          <Button size="small" icon={<EditOutlined />} />
+          <Button
+            onClick={() => opneEditDrawer(record)}
+            size="small"
+            icon={<EditOutlined />}
+          />
           <Button size="small" danger icon={<DeleteOutlined />} />
         </Space>
       ),
     },
   ];
 
+  const opneEditDrawer = (record: any) => {
+    setSelectedEmployee(record);
+    setOpenDrawer(true);
+  };
   const closeEditDrawer = () => {
     setOpenDrawer(false);
   };
@@ -114,7 +136,10 @@ const Employe: React.FC = () => {
         open={openDrawer}
         onClose={closeEditDrawer}
       >
-        {/* <EditEmploye /> */}
+        <EditEmploye
+          employeData={selectedEmployee}
+          closeDrawer={closeEditDrawer}
+        />
       </Drawer>
       {/*createdata */}
       <Drawer

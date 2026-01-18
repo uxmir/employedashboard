@@ -1,14 +1,17 @@
 import React, { createContext,ReactNode,useContext, useEffect, useState } from 'react'
 interface EmployeData{
+   key:React.Key;
     employe_name:string,
     department:string,
     role:string,
     joining_date:string,
-    progress:number
+    progress:number,
+    status:string
 }
 interface EmployeContextType{
     employes:EmployeData[],
     createEmployeData:(formData:EmployeData)=>void
+    editEmployeData: (formData: EmployeData) => void;
 }
 export const EmployeDataContext=createContext<EmployeContextType|undefined>(undefined)
 const EmployeDataProvider:React.FC<{children:ReactNode}> = ({children}) => {
@@ -18,6 +21,13 @@ const EmployeDataProvider:React.FC<{children:ReactNode}> = ({children}) => {
     setEmployes(updatedData)
     localStorage.setItem("data",JSON.stringify(updatedData))
   }
+  const editEmployeData = (formData: EmployeData) => {
+    const updatedData = employes.map((item) =>
+      item.key === formData.key ? formData : item
+    );
+    setEmployes(updatedData);
+    localStorage.setItem("data", JSON.stringify(updatedData));
+  };
   useEffect(()=>{
     const savedData=localStorage.getItem("data")
     if(!savedData){
@@ -26,7 +36,7 @@ const EmployeDataProvider:React.FC<{children:ReactNode}> = ({children}) => {
     setEmployes(JSON.parse(savedData))
   },[])
   return (
-    <EmployeDataContext.Provider value={{employes,createEmployeData}}>
+    <EmployeDataContext.Provider value={{employes,createEmployeData,editEmployeData}}>
       {children}
     </EmployeDataContext.Provider>
   )

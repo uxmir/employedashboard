@@ -6,15 +6,19 @@ import {
   InputNumber,
   Button,
   message,
+  Select, // ইমপোর্ট করা হয়েছে
 } from "antd";
 import { useEmploye } from "../DataProvider/EmployeDataProvider";
+
 interface createEmployeProps {
   closeDrawer: () => void;
 }
+
 const CreateEmploye: React.FC<createEmployeProps> = ({ closeDrawer }) => {
   const { Title } = Typography;
   const [form] = Form.useForm();
   const { createEmployeData } = useEmploye();
+
   const onFinish = (values: any) => {
     try {
       const formattedValues = {
@@ -26,14 +30,15 @@ const CreateEmploye: React.FC<createEmployeProps> = ({ closeDrawer }) => {
       createEmployeData(formattedValues);
       closeDrawer();
       form.resetFields();
-      message.success("data created successfully");
+      message.success("Employee created successfully");
     } catch (error) {
-      message.error("there is somethig wrong");
+      message.error("Something went wrong");
     }
   };
+
   return (
     <>
-      <Title level={3}> Create employe</Title>
+      <Title level={3}> Create Employee</Title>
       <div className="mt-5">
         <Form
           form={form}
@@ -41,31 +46,38 @@ const CreateEmploye: React.FC<createEmployeProps> = ({ closeDrawer }) => {
           onFinish={onFinish}
           autoComplete="off"
         >
+          {/* Employee Name */}
           <Form.Item
-            label="Employe Name"
+            label="Employee Name"
             name="employe_name"
             rules={[{ required: true, message: "Name is Required" }]}
           >
             <Input placeholder="Enter Name" />
           </Form.Item>
+
+          {/* Department */}
           <Form.Item
-            label="DepartMent"
+            label="Department"
             name="department"
-            rules={[{ required: true, message: "department is required" }]}
+            rules={[{ required: true, message: "Department is required" }]}
           >
-            <Input placeholder="Enter DepartMent" />
+            <Input placeholder="Enter Department" />
           </Form.Item>
+
+          {/* Role */}
           <Form.Item
             label="Role"
             name="role"
-            rules={[{ required: true, message: "role" }]}
+            rules={[{ required: true, message: "Role is required" }]}
           >
             <Input placeholder="Enter Role" />
           </Form.Item>
+
+          {/* Joining Date */}
           <Form.Item
             label="Joining Date"
             name="joining_date"
-            rules={[{ required: true, message: "Joinig date is required" }]}
+            rules={[{ required: true, message: "Joining date is required" }]}
           >
             <DatePicker
               className="w-full"
@@ -73,6 +85,21 @@ const CreateEmploye: React.FC<createEmployeProps> = ({ closeDrawer }) => {
               format="DD/MM/YYYY"
             />
           </Form.Item>
+
+          {/* Status (নতুন যোগ করা হয়েছে) */}
+          <Form.Item
+            label="Status"
+            name="status"
+            rules={[{ required: true, message: "Status is required" }]}
+            initialValue="active"
+          >
+            <Select placeholder="Select Status">
+              <Select.Option value="active">Active</Select.Option>
+              <Select.Option value="archive">Archive</Select.Option>
+            </Select>
+          </Form.Item>
+
+          {/* Progress */}
           <Form.Item label="Progress" name="progress">
             <InputNumber
               style={{ width: "100%" }}
@@ -81,6 +108,7 @@ const CreateEmploye: React.FC<createEmployeProps> = ({ closeDrawer }) => {
               placeholder="Enter Progress"
             />
           </Form.Item>
+
           <Form.Item>
             <Button style={{ width: "100%" }} htmlType="submit" type="primary">
               Submit
