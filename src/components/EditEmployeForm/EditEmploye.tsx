@@ -50,16 +50,16 @@ const EditEmploye: React.FC<EditEmployeProps> = ({ employeData, closeDrawer }) =
     <div className="mt-5">
       <h2 className="mb-4 text-xl font-bold">Edit Employee</h2>
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item label="Employee Name" name="employe_name" rules={[{required: true}]}><Input /></Form.Item>
-        <Form.Item label="Department" name="department" rules={[{required: true}]}><Input /></Form.Item>
-        <Form.Item label="Role" name="role" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Employee Name" name="employe_name" ><Input /></Form.Item>
+        <Form.Item label="Department" name="department" ><Input /></Form.Item>
+        <Form.Item label="Role" name="role" ><Input /></Form.Item>
         
-        <Form.Item label="Joining Date" name="joining_date" rules={[{required: true}]}>
+        <Form.Item label="Joining Date" name="joining_date" >
           <DatePicker className="w-full" format="DD/MM/YYYY" />
         </Form.Item>
 
         {/* Status Select Field */}
-        <Form.Item label="Status" name="status" rules={[{required: true}]}>
+        <Form.Item label="Status" name="status" >
           <Select>
             <Select.Option value="active">Active</Select.Option>
             <Select.Option value="archive">Archive</Select.Option>

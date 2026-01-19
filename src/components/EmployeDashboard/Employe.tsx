@@ -13,6 +13,7 @@ import {
   Row,
   Col,
   Spin,
+  Popconfirm
 } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import CreateEmploye from "../CreateEmployeForm/CreateEmploye";
@@ -34,7 +35,7 @@ const Employe: React.FC = () => {
   const [departmentFilter, setDepartmentFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const { employes } = useEmploye();
+  const { employes,changeStatus } = useEmploye();
   const columns = [
     {
       title: "Employe Name",
@@ -114,11 +115,19 @@ const Employe: React.FC = () => {
       render: (_: any, record: any) => (
         <Space size={"middle"}>
           <Button
-            onClick={() => opneEditDrawer(record)}
+            onClick={() => openEditDrawer(record)}
             size="small"
             icon={<EditOutlined />}
           />
-          <Button size="small" danger icon={<DeleteOutlined />} />
+        <Popconfirm
+        title="Archive Employee?"
+        description="This will move the employee to archive list."
+        onConfirm={() => changeStatus(record)} // আপনার ফাংশন কল
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button size="small" danger icon={<DeleteOutlined />} />
+      </Popconfirm>
         </Space>
       ),
     },
@@ -130,10 +139,14 @@ const Employe: React.FC = () => {
   ];
   //filter logic
   const filteredData:EmployeData[] = employes.filter((item:EmployeData) => {
-    const searchMached =
-      item.employe_name.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.department.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.role.toLowerCase().includes(searchText.toLowerCase());
+   const name = (item.employe_name || "").toLowerCase();
+  const dept = (item.department || "").toLowerCase();
+  const role = (item.role || "").toLowerCase();
+  const search = (searchText || "").toLowerCase();
+  const searchMached = 
+    name.includes(search) || 
+    dept.includes(search) || 
+    role.includes(search);
     const filterDepartment = departmentFilter
       ? departmentFilter === item.department
       : true;
@@ -149,7 +162,7 @@ const Employe: React.FC = () => {
     return () => clearTimeout(timeoOut);
   }, [searchText, departmentFilter, statusFilter]);
 
-  const opneEditDrawer = (record: any) => {
+  const openEditDrawer = (record: any) => {
     setSelectedEmployee(record);
     setOpenDrawer(true);
   };
@@ -162,6 +175,7 @@ const Employe: React.FC = () => {
   const closeCreateDrawer = () => {
     setCreateEmployeDrawer(false);
   };
+
   return (
     <div>
       <Container>

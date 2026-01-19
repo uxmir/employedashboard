@@ -86,7 +86,7 @@ const CreateEmploye: React.FC<createEmployeProps> = ({ closeDrawer }) => {
             />
           </Form.Item>
 
-          {/* Status (নতুন যোগ করা হয়েছে) */}
+          {/* Status  */}
           <Form.Item
             label="Status"
             name="status"

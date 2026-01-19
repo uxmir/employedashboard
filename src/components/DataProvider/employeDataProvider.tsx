@@ -12,6 +12,7 @@ interface EmployeContextType{
     employes:EmployeData[],
     createEmployeData:(formData:EmployeData)=>void
     editEmployeData: (formData: EmployeData) => void;
+    changeStatus:(FormData:EmployeData)=>void
 }
 export const EmployeDataContext=createContext<EmployeContextType|undefined>(undefined)
 const EmployeDataProvider:React.FC<{children:ReactNode}> = ({children}) => {
@@ -35,8 +36,20 @@ const EmployeDataProvider:React.FC<{children:ReactNode}> = ({children}) => {
     }
     setEmployes(JSON.parse(savedData))
   },[])
+  //changeStatusLogic for softDelete
+  const changeStatus=(record:EmployeData)=>{
+    const changedStatus=employes.map((item)=>{
+    if(item.key===record.key) {
+      return{...item,status:'archive'}
+    } 
+    return item;
+    }
+    )
+    setEmployes(changedStatus)
+    localStorage.setItem("data",JSON.stringify(changedStatus))
+  }
   return (
-    <EmployeDataContext.Provider value={{employes,createEmployeData,editEmployeData}}>
+    <EmployeDataContext.Provider value={{employes,createEmployeData,editEmployeData,changeStatus}}>
       {children}
     </EmployeDataContext.Provider>
   )
