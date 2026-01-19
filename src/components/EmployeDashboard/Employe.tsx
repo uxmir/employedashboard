@@ -1,23 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Container from "../Container";
-import { Table, Tag, Button, Space, Drawer, Progress } from "antd";
+import {
+  Typography,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Drawer,
+  Progress,
+  Select,
+  Input,
+  Row,
+  Col,
+  Spin,
+} from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import CreateEmploye from "../CreateEmployeForm/CreateEmploye";
 import EditEmploye from "../EditEmployeForm/EditEmploye";
 import { useEmploye } from "../DataProvider/EmployeDataProvider";
-
+//for selectinput in department
+interface departmentSectors {
+  id: number;
+  value: string;
+}
 const Employe: React.FC = () => {
+  const { Title } = Typography;
+  const { Search } = Input;
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [createEmployeDrawer, setCreateEmployeDrawer] =
     useState<boolean>(false);
   const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
+  const [searchText, setSearchText] = useState<string>("");
+  const [departmentFilter, setDepartmentFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const { employes } = useEmploye();
   const columns = [
     {
       title: "Employe Name",
       dataIndex: "employe_name",
       key: "employe_name",
-      // স্ট্রিং এর জন্য localeCompare ব্যবহার করুন
       sorter: (a: any, b: any) => a.employe_name.localeCompare(b.employe_name),
       render: (employe_name: string) => (
         <b className="text-gray-600 capitalize font-medium text-base">
@@ -101,6 +123,31 @@ const Employe: React.FC = () => {
       ),
     },
   ];
+  const departmentData: departmentSectors[] = [
+    { id: 1, value: "hr" },
+    { id: 2, value: "software" },
+    { id: 3, value: "creative" },
+  ];
+  //filter logic
+  const filteredData = employes.filter((item) => {
+    const searchMached =
+      item.employe_name.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.department.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.role.toLowerCase().includes(searchText.toLowerCase());
+    const filterDepartment = departmentFilter
+      ? departmentFilter === item.department
+      : true;
+    const filterStatus = statusFilter ? statusFilter === item.status : true;
+    return searchMached && filterDepartment && filterStatus;
+  });
+  //loding logic in filter
+  useEffect(() => {
+    setLoading(true);
+    const timeoOut = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    return () => clearTimeout(timeoOut);
+  }, [searchText, departmentFilter, statusFilter]);
 
   const opneEditDrawer = (record: any) => {
     setSelectedEmployee(record);
@@ -119,12 +166,61 @@ const Employe: React.FC = () => {
     <div>
       <Container>
         <div className="mt-30">
-          <div className="my-5 flex justify-end">
-            <Button onClick={openCreateDrawer} size="middle" type="primary">
-              Create Employe
-            </Button>
+          <Title level={1}>Employe Dashboard</Title>
+          <div className="my-6 p-4 bg-gray-50 rounded-lg">
+            <Row gutter={[16, 16]} align="middle">
+              <Col xs={24} md={8}>
+                <Search
+                  placeholder="Search Name, Dept or Role"
+                  allowClear
+                  onChange={(e: any) => setSearchText(e.target.value)}
+                />
+              </Col>
+              <Col xs={12} md={6}>
+                <Select
+                  placeholder="Filter by Dept"
+                  className="w-full"
+                  allowClear
+                  onChange={(value) => setDepartmentFilter(value)}
+                >
+                  {departmentData.map((data) => (
+                    <Select.Option
+                      key={data.id}
+                      value={data.value}
+                      style={{ textTransform: "capitalize" }}
+                    >
+                      {data.value}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Col>
+              <Col xs={12} md={6}>
+                <Select
+                  placeholder="Filter by Status"
+                  className="w-full"
+                  allowClear
+                  onChange={(value) => setStatusFilter(value)}
+                >
+                  <Select.Option value="active">Active</Select.Option>
+                  <Select.Option value="archive">Archive</Select.Option>
+                </Select>
+              </Col>
+
+              <Col xs={24} md={4} className="text-right">
+                <Button onClick={openCreateDrawer} type="primary" block>
+                  Create Employe
+                </Button>
+              </Col>
+            </Row>
           </div>
-          <Table dataSource={employes} columns={columns} scroll={{ x: 800 }} />
+
+          <Spin spinning={loading} tip="Filtering Data..." >
+            <Table
+              dataSource={filteredData}
+              columns={columns}
+              scroll={{ x: 800 }}
+            />
+          </Spin>
         </div>
       </Container>
       <Drawer

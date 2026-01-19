@@ -3,7 +3,6 @@ import { Form, Input, DatePicker, InputNumber, Button, message, Select } from "a
 import dayjs from 'dayjs'; 
 import { useEmploye } from '../DataProvider/EmployeDataProvider';
 
-// ইন্টারফেস আপডেট
 interface EditEmployeData {
   key: React.Key;
   employe_name: string;
@@ -11,7 +10,7 @@ interface EditEmployeData {
   role: string;
   joining_date: string;
   progress: number;
-  status: string; // এখানে যোগ করা হয়েছে
+  status: string;
 }
 
 interface EditEmployeProps {
@@ -39,7 +38,6 @@ const EditEmploye: React.FC<EditEmployeProps> = ({ employeData, closeDrawer }) =
         key: employeData?.key, 
         joining_date: values.joining_date ? values.joining_date.format("DD/MM/YYYY") : "",
       };
-      
       editEmployeData(formattedValues);
       closeDrawer();
       message.success("Employee data updated successfully");
