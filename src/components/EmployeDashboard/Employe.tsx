@@ -17,7 +17,7 @@ import {
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import CreateEmploye from "../CreateEmployeForm/CreateEmploye";
 import EditEmploye from "../EditEmployeForm/EditEmploye";
-import { useEmploye } from "../DataProvider/EmployeDataProvider";
+import { useEmploye,EmployeData } from "../DataProvider/EmployeDataProvider";
 //for selectinput in department
 interface departmentSectors {
   id: number;
@@ -129,7 +129,7 @@ const Employe: React.FC = () => {
     { id: 3, value: "creative" },
   ];
   //filter logic
-  const filteredData = employes.filter((item) => {
+  const filteredData:EmployeData[] = employes.filter((item:EmployeData) => {
     const searchMached =
       item.employe_name.toLowerCase().includes(searchText.toLowerCase()) ||
       item.department.toLowerCase().includes(searchText.toLowerCase()) ||

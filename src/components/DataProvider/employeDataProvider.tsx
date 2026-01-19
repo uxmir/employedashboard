@@ -1,5 +1,5 @@
 import React, { createContext,ReactNode,useContext, useEffect, useState } from 'react'
-interface EmployeData{
+export interface EmployeData{
    key:React.Key;
     employe_name:string,
     department:string,
